@@ -6,10 +6,13 @@ from stream import Stream
 
 
 def smap(func, *streams):
-    tails = [s.tail for s in streams]
-    if not all(tails):
-        return Stream(func(*(s.head for s in streams)))
-    return Stream(func(*(s.head for s in streams)), partial(smap, func, *tails))
+    def resolve():
+        tails = [s.tail for s in streams]
+        if not all(tails):
+            return None
+        else:
+            return smap(func, *tails)
+    return Stream(func(*(s.head for s in streams)), resolve)
 
 
 def szip(*streams):
