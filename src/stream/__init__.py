@@ -39,6 +39,8 @@ class Stream(typing.Generic[_ST]):
     def __eq__(self, other):
         """use with caution: it will try to drain the stream.
         If both streams are long enough, it will raise RecursionError"""
+        if other is None:
+            return False
         if not isinstance(other, Stream):
             return NotImplemented
         try:
