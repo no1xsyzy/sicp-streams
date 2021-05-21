@@ -66,6 +66,14 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
             resolved_so_far.append(pivot._tail)
         return self.__class__.__module__+"."+self.__class__.__name__+repr(tuple(resolved_so_far))
 
+    def __getitem__(self, item):
+        if item < 0:
+            raise ValueError
+        elif item == 0:
+            return self.head
+        else:
+            return self.tail[item-1]
+
     @classmethod
     def from_iterable(cls, iterable: typing.Iterable[_ST]) -> 'typing.Union[Stream[_ST], None]':
         """should consume the iterable"""
