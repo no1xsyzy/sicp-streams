@@ -48,6 +48,17 @@ class Stream(typing.Generic[_ST]):
         except RecursionError:
             return NotImplemented
 
+    def __repr__(self):
+        resolved_so_far = []
+        pivot = self
+        resolved_so_far.append(pivot.head)
+        while isinstance(pivot._tail, Stream):
+            pivot = pivot._tail
+            resolved_so_far.append(pivot.head)
+        if pivot is not None:
+            resolved_so_far.append(pivot._tail)
+        return self.__class__.__module__+"."+self.__class__.__name__+repr(tuple(resolved_so_far))
+
     @classmethod
     def from_iterable(cls, iterable: typing.Iterable[_ST]) -> 'Stream[_ST]':
         """should consume the iterable"""

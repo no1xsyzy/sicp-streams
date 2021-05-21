@@ -56,3 +56,9 @@ def test_equivalence():
         Stream.from_iterable(range(1, 4)),
     ], 2):
         assert a == b
+
+
+def test_repr():
+    assert repr(Stream(1, 2, 3)) == "stream.Stream(1, 2, 3)"
+    lambda_ = lambda: Stream(2, 3)
+    assert repr(Stream(1, lambda_)) == "stream.Stream(1, " + repr(lambda_) + ")"
