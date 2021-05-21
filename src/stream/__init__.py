@@ -46,6 +46,8 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
     def __eq__(self, other: 'typing.Union[Stream[_ST], None]'):
         """use with caution: it will try to drain the stream.
         If both streams are long enough, it will raise RecursionError"""
+        if self is other:
+            return True
         if other is None:
             return False
         if not isinstance(other, Stream):
