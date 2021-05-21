@@ -36,7 +36,7 @@ class Stream(typing.Generic[_ST]):
             yield y.head
             y = y.tail
 
-    def __eq__(self, other):
+    def __eq__(self, other: 'typing.Union[Stream[_ST], None]'):
         """use with caution: it will try to drain the stream.
         If both streams are long enough, it will raise RecursionError"""
         if other is None:
@@ -60,7 +60,7 @@ class Stream(typing.Generic[_ST]):
         return self.__class__.__module__+"."+self.__class__.__name__+repr(tuple(resolved_so_far))
 
     @classmethod
-    def from_iterable(cls, iterable: typing.Iterable[_ST]) -> 'Stream[_ST]':
+    def from_iterable(cls, iterable: typing.Iterable[_ST]) -> 'typing.Union[Stream[_ST], None]':
         """should consume the iterable"""
         it = iter(iterable)
         try:
