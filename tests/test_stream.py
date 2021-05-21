@@ -62,3 +62,7 @@ def test_repr():
     assert repr(Stream(1, 2, 3)) == "stream.Stream(1, 2, 3)"
     lambda_ = lambda: Stream(2, 3)
     assert repr(Stream(1, lambda_)) == "stream.Stream(1, " + repr(lambda_) + ")"
+
+
+def test_none_is_instance():
+    assert isinstance(None, Stream)

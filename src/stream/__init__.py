@@ -4,7 +4,14 @@ from functools import partial
 _ST = typing.TypeVar('_ST')
 
 
-class Stream(typing.Generic[_ST]):
+class StreamMeta(type):
+    def __instancecheck__(self, other):
+        if other is None:
+            return True
+        return super().__instancecheck__(other)
+
+
+class Stream(typing.Generic[_ST], metaclass=StreamMeta):
     __slots__ = ('_head', '_tail')
 
     def __init__(self, head, *args):
