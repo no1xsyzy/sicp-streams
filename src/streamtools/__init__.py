@@ -12,14 +12,18 @@ def smap(func, *streams):
             return None
         else:
             return smap(func, *tails)
+
     return Stream(func(*(s.head for s in streams)), resolve)
 
 
 def szip(*streams):
-    tails = [s.tail for s in streams]
-    if not all(tails):
-        return Stream(tuple(s.head for s in streams))
-    return Stream(tuple(s.head for s in streams), partial(szip, *tails))
+    def resolve():
+        tails = [s.tail for s in streams]
+        if not all(tails):
+            return None
+        return szip(*tails)
+
+    return Stream(tuple(s.head for s in streams), resolve)
 
 
 def sfilter(func, stream):
@@ -27,7 +31,7 @@ def sfilter(func, stream):
         stream = stream.tail
     if stream is None:
         return None
-    return Stream(stream.head, partial(sfilter, func, stream.tail))
+    return Stream(stream.head, lambda: sfilter(func, stream.tail))
 
 
 def count(start=0, step=1):
@@ -37,14 +41,14 @@ def count(start=0, step=1):
 def cycle(stream):
     first = None
 
-    def tailfactory(stream):
+    def tailfactory(st):
         nonlocal first
-        if stream is None:
+        if st is None:
             if first is None:
                 return None
             else:
                 return first
-        s = Stream(stream.head, partial(tailfactory, stream.tail))
+        s = Stream(st.head, lambda: tailfactory(st.tail))
         if first is None:
             first = s
         return s
@@ -54,8 +58,7 @@ def cycle(stream):
 
 def repeat(obj, times=None):
     if times is None:
-        s = Stream(obj, lambda: s)
-        return s
+        return cycle(Stream(obj, None))
     if times <= 0:
         return None
     return Stream(obj, partial(repeat, obj, times - 1))
@@ -64,9 +67,16 @@ def repeat(obj, times=None):
 def accumulate(stream, func=operator.add, *, initial=None):
     if stream is None:
         return Stream(initial)
-    if initial is None:
-        return accumulate(stream.tail, func, initial=stream.head)
-    return Stream(initial, partial(accumulate, stream.tail, func, initial=func(initial, stream.head)))
+
+    def resolve(stream, initial):
+        if stream is None:
+            return None
+        head = func(initial, stream.head)
+        return Stream(head, lambda: resolve(stream.tail, head))
+
+    if initial is not None:
+        return Stream(initial, lambda: resolve(stream, initial))
+    return Stream(stream.head, lambda: resolve(stream.tail, stream.head))
 
 
 def chain(*streams):
@@ -84,12 +94,12 @@ def chain_from_streams(streams):
     if streams is None:
         return None
     first = streams.head
-    streams = streams.tail
+    # streams = streams.tail
     if first is None:
-        return chain_from_streams(streams)
-    if streams is None:
-        return first
-    return Stream(first.head, partial(chain_from_streams, Stream(first.tail, streams)))
+        return chain_from_streams(streams.tail)
+    # if streams.tail is None:
+    #     return first
+    return Stream(first.head, lambda: chain_from_streams(Stream(first.tail, streams.tail)))
 
 
 def compress(data, selectors):
@@ -97,7 +107,7 @@ def compress(data, selectors):
         data, selectors = data.tail, selectors.tail
     if data is None or selectors is None:
         return None
-    return Stream(data.head, partial(compress, data.tail, selectors.tail))
+    return Stream(data.head, lambda: compress(data.tail, selectors.tail))
 
 
 def dropwhile(predicate, stream):
@@ -111,7 +121,7 @@ def filterfalse(func, stream):
         stream = stream.tail
     if stream is None:
         return None
-    return Stream(stream.head, partial(filterfalse, func, stream.tail))
+    return Stream(stream.head, lambda: filterfalse(func, stream.tail))
 
 
 def groupby(stream, key=None):
@@ -127,39 +137,39 @@ def groupby(stream, key=None):
     def _grouper(stream, tgtkey):
         if stream is None or tgtkey != keyfunc(stream.head):
             return None
-        return Stream(stream.head, partial(_grouper, stream.tail, tgtkey))
+        return Stream(stream.head, lambda: _grouper(stream.tail, tgtkey))
 
     currkey = keyfunc(stream.head)
 
-    ng_stream = dropwhile(lambda x: currkey == keyfunc(x), stream)
-
-    return Stream((currkey, _grouper(stream, currkey)), partial(groupby, ng_stream, keyfunc))
+    return Stream((currkey, _grouper(stream, currkey)),
+                  lambda: groupby(dropwhile(lambda x: currkey == keyfunc(x), stream), keyfunc))
 
 
 def sslice(stream, *args):
     s = slice(*args)
-    start, stop, step = s.start or 0, s.stop or None, s.step or 1
+    start, stop, step = s.start or 0, s.stop or float('+inf'), s.step or 1
 
-    while stream is not None and start > 0 and (stop is None or stop > 0):
+    if stop <= start:
+        return None
+    while stream is not None and start > 0 and stop > 0:
         stream = stream.tail
         start -= 1
-        stop = stop - 1 if stop is not None else None
-    if stream is None or (stop is not None and stop <= start):
+        stop -= 1
+    if stream is None:
         return None
-    return Stream(stream.head, partial(sslice, stream, step, stop, step))
+    return Stream(stream.head, lambda: sslice(stream, step, stop, step))
 
 
 def starmap(func, stream):
-    tail = stream.tail
-    if not tail:
-        return Stream(func(*stream.head))
-    return Stream(func(*stream.head), partial(starmap, func, tail))
+    if not stream:
+        return None
+    return Stream(func(*stream.head), lambda: starmap(func, stream.tail))
 
 
 def takewhile(predicate, stream):
     if stream is None or not predicate(stream.head):
         return None
-    return Stream(stream.head, partial(takewhile, predicate, stream.tail))
+    return Stream(stream.head, lambda: takewhile(predicate, stream.tail))
 
 
 def tee(stream, n=2):
@@ -168,11 +178,13 @@ def tee(stream, n=2):
 
 
 def zip_longest(*streams, fillvalue=None):
-    tails = [None if s is None else s.tail for s in streams]
-    if not any(tails):
-        return Stream(tuple(fillvalue if s is None else s.head for s in streams))
+    def resolve():
+        tails = [None if s is None else s.tail for s in streams]
+        if not any(tails):
+            return None  # Stream(tuple(fillvalue if s is None else s.head for s in streams))
+        return zip_longest(*tails, fillvalue=fillvalue)
     return Stream(tuple(fillvalue if s is None else s.head for s in streams),
-                  partial(zip_longest, *tails, fillvalue=fillvalue))
+                  resolve)
 
 
 def product(*streams, repeat=1):
