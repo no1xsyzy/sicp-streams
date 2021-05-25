@@ -61,7 +61,7 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
         resolved_so_far = []
         pivot = self
         resolved_so_far.append(pivot.head)
-        while isinstance(pivot._tail, Stream):
+        while isinstance(pivot._tail, Stream) and pivot._tail is not None:
             pivot = pivot._tail
             resolved_so_far.append(pivot.head)
         if pivot is not None:
