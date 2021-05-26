@@ -74,3 +74,11 @@ def test_getitem():
 
 def test_from_iterable():
     assert Stream.from_iterable(iter([1, 2, 3, 4, 5])) == Stream(1, 2, 3, 4, 5)
+
+
+def test_from_generator_function():
+    @Stream.from_generator_function
+    def run(x):
+        yield from range(x)
+
+    assert run(10) == Stream(*range(10))

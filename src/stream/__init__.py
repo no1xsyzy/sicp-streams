@@ -1,3 +1,4 @@
+import functools
 import typing
 from functools import partial
 
@@ -66,7 +67,7 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
             resolved_so_far.append(pivot.head)
         if pivot is not None:
             resolved_so_far.append(pivot._tail)
-        return self.__class__.__module__+"."+self.__class__.__name__+repr(tuple(resolved_so_far))
+        return self.__class__.__module__ + "." + self.__class__.__name__ + repr(tuple(resolved_so_far))
 
     def __getitem__(self, item):
         if item < 0:
@@ -74,7 +75,7 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
         elif item == 0:
             return self.head
         else:
-            return self.tail[item-1]
+            return self.tail[item - 1]
 
     @classmethod
     def from_iterable(cls, iterable: typing.Iterable[_ST]) -> 'typing.Union[Stream[_ST], None]':
@@ -86,3 +87,14 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
             return None
         else:
             return cls(n, partial(cls.from_iterable, it))
+
+    @classmethod
+    def from_generator_function(
+            cls, generator_function: typing.Callable[..., typing.Iterable[_ST]]
+    ) -> 'typing.Callable[..., typing.Union[Stream[_ST], None]]':
+        @functools.wraps(generator_function)
+        def wrapped(*args, **kwargs):
+            generator = generator_function(*args, **kwargs)
+            return cls.from_iterable(generator)
+
+        return wrapped
