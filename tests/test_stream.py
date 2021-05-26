@@ -70,3 +70,7 @@ def test_none_is_instance():
 
 def test_getitem():
     assert Stream(*range(100))[99] == 99
+
+
+def test_from_iterable():
+    assert Stream.from_iterable(iter([1, 2, 3, 4, 5])) == Stream(1, 2, 3, 4, 5)
