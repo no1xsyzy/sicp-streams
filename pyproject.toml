@@ -2,7 +2,7 @@
 name = "streams"
 version = "0.1.0"
 description = ""
-authors = ["no1xsyzy <mf20070535@126.com>"]
+authors = ["Xu Siyuan <inqb@protonmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
