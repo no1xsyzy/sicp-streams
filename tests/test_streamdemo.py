@@ -29,3 +29,14 @@ def test_factorials():
 def test_sieved_primes2():
     assert streamtools.sslice(primes2, 4) == Stream(2, 3, 5, 7)
     assert primes2[50] == 233
+
+
+def test_pi_stream():
+    assert pi_stream[0] == 4
+    assert pi_stream[1] == 4 - 4 / 3
+    assert pi_stream[2] == 4 - 4 / 3 + 4 / 5
+
+
+def test_accelerated_pi_stream():
+    assert accelerated_pi_stream[0] == 4
+    assert abs(accelerated_pi_stream[8] - 3.1415926) < 0.0000001
