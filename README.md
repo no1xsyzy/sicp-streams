@@ -14,7 +14,7 @@ Stream is designed to be immutable, but not enforced by codes. Prevent doing any
 
 ```python
 ## Importing and Constructing a Stream
-from stream import Stream
+from sicp_streams import Stream
 
 s = Stream("axolotl", "barnacle", "coral")
 
@@ -60,7 +60,7 @@ integers = counts(1)
 ## Toolbox Analog to `itertools` and Iterator-related Built-in Functions
 
 ```python
-from stream import Stream
+from sicp_streams import Stream
 import streamtools
 
 # some of them have different name (for obvious but unnecessary reason)

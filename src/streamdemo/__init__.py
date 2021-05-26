@@ -3,7 +3,7 @@
 from functools import partial
 
 import streamtools
-from stream import Stream
+from sicp_streams import Stream
 
 
 def _sieve(stream):

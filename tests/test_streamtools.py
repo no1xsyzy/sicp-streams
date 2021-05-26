@@ -2,7 +2,7 @@ import operator
 
 import pytest
 import streamtools
-from stream import Stream
+from sicp_streams import Stream
 
 _err1 = Stream(1, lambda: Stream(1 / 0, None))
 

@@ -2,7 +2,7 @@
 import operator
 from functools import partial
 
-from stream import Stream
+from sicp_streams import Stream
 
 
 def smap(func, *streams):

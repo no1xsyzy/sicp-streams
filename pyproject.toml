@@ -1,8 +1,9 @@
 [tool.poetry]
-name = "streams"
+name = "sicp-streams"
 version = "0.1.0"
 description = ""
 authors = ["Xu Siyuan <inqb@protonmail.com>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.9"

@@ -1,7 +1,7 @@
 import itertools
 
 import pytest
-from stream import Stream
+from sicp_streams import Stream
 
 
 def test_new_stream():
@@ -59,9 +59,9 @@ def test_equivalence():
 
 
 def test_repr():
-    assert repr(Stream(1, 2, 3)) == "stream.Stream(1, 2, 3)"
+    assert repr(Stream(1, 2, 3)) == "sicp_streams.Stream(1, 2, 3)"
     lambda_ = lambda: Stream(2, 3)
-    assert repr(Stream(1, lambda_)) == "stream.Stream(1, " + repr(lambda_) + ")"
+    assert repr(Stream(1, lambda_)) == "sicp_streams.Stream(1, " + repr(lambda_) + ")"
 
 
 def test_none_is_instance():
