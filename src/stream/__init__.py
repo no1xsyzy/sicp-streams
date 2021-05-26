@@ -72,10 +72,15 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
     def __getitem__(self, item):
         if item < 0:
             raise ValueError
-        elif item == 0:
-            return self.head
-        else:
-            return self.tail[item - 1]
+
+        pointer = self
+        while pointer.tail is not None and item > 0:
+            pointer = pointer.tail
+            item -= 1
+        if item == 0:
+            return pointer.head
+        elif pointer.tail is None:
+            raise IndexError("stream index out of range")
 
     @classmethod
     def from_iterable(cls, iterable: typing.Iterable[_ST]) -> 'typing.Union[Stream[_ST], None]':
