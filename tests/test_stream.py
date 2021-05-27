@@ -55,10 +55,17 @@ def test_equivalence():
     assert Stream(1, 2, 3) != Stream(4, 5, 6)
 
     infinite_stream1 = Stream(1, lambda: infinite_stream1)
-    infinite_stream2 = Stream(1, lambda: infinite_stream2)
+    infinite_stream2 = Stream(1, 1, lambda: infinite_stream2)
 
+    assert infinite_stream1 == infinite_stream2
+    assert Stream(0, s) == Stream(0, s)
+    s12 = Stream(1, 2)
+    assert s12 != s
+
+    limit = Stream._eq_detect_limit
+    assert Stream(*range(limit + 1)) == Stream(*range(limit + 1))
     with pytest.raises(RecursionError):
-        assert infinite_stream1 == infinite_stream2
+        assert Stream(*range(limit + 2)) != Stream(*range(limit + 2))
 
     for a, b in itertools.combinations([
         Stream(1, 2, 3),

@@ -15,6 +15,8 @@ class StreamMeta(type):
 class Stream(typing.Generic[_ST], metaclass=StreamMeta):
     __slots__ = ('_head', '_tail')
 
+    _eq_detect_limit: typing.ClassVar[int] = 200
+
     def __init__(self, head, *args):
         if args:
             *more_heads, tail = args
@@ -54,9 +56,23 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
         if not isinstance(other, Stream):
             return NotImplemented
 
-        if self.head != other.head:
-            return False
-        return self.tail == other.tail
+        pointer_self = self
+        pointer_other = other
+        count = 0
+        while True:
+            if pointer_self.head != pointer_other.head:
+                return False
+            if pointer_self.tail is pointer_other.tail:
+                return True
+            if pointer_self.tail is None or pointer_other is None:
+                return False
+            pointer_self = pointer_self.tail
+            pointer_other = pointer_other.tail
+            count += 1
+            if pointer_self is self and pointer_other is other:
+                return True
+            if count > self._eq_detect_limit:
+                raise RecursionError
 
     def __repr__(self):
         resolved_so_far = []
