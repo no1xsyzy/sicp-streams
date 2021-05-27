@@ -53,10 +53,10 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
             return False
         if not isinstance(other, Stream):
             return NotImplemented
-        try:
-            return self.head == other.head and self.tail == other.tail
-        except RecursionError:
-            return NotImplemented
+
+        if self.head != other.head:
+            return False
+        return self.tail == other.tail
 
     def __repr__(self):
         resolved_so_far = []

@@ -78,6 +78,8 @@ def test_repeat():
 
 
 def test_accumulate():
+    assert streamtools.accumulate(None) is None
+    assert streamtools.accumulate(None, initial=10) == Stream(10)
     assert streamtools.accumulate(Stream(1, 2, 3, 4, 5)) == Stream(1, 3, 6, 10, 15)
     assert streamtools.accumulate(Stream(1, 2, 3, 4, 5), initial=100) == Stream(100, 101, 103, 106, 110, 115)
     assert streamtools.accumulate(Stream(1, 2, 3, 4, 5), operator.mul) == Stream(1, 2, 6, 24, 120)
@@ -86,6 +88,7 @@ def test_accumulate():
 
 
 def test_chain():
+    assert streamtools.chain() is None
     s1t3 = Stream(1, 2, 3)
     s4t6 = Stream(4, 5, 6)
     s1t6 = Stream(1, 2, 3, 4, 5, 6)

@@ -47,6 +47,19 @@ def test_list_from_stream():
 
 
 def test_equivalence():
+    s = Stream(1, 2, 3)
+    empty_stream = None
+    assert s == s
+    assert s != empty_stream
+    assert s != 1
+    assert Stream(1, 2, 3) != Stream(4, 5, 6)
+
+    infinite_stream1 = Stream(1, lambda: infinite_stream1)
+    infinite_stream2 = Stream(1, lambda: infinite_stream2)
+
+    with pytest.raises(RecursionError):
+        assert infinite_stream1 == infinite_stream2
+
     for a, b in itertools.combinations([
         Stream(1, 2, 3),
         Stream(1, Stream(2, 3)),
@@ -70,6 +83,14 @@ def test_none_is_instance():
 
 def test_getitem():
     assert Stream(*range(100))[99] == 99
+    with pytest.raises(ValueError):
+        # noinspection PyStatementEffect
+        # should raise
+        Stream(*range(100))[-1]
+    with pytest.raises(IndexError):
+        # noinspection PyStatementEffect
+        # should raise
+        Stream(*range(1))[2]
 
 
 def test_from_iterable():

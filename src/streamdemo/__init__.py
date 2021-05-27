@@ -1,7 +1,5 @@
 """Well-known streams"""
 
-from functools import partial
-
 import streamtools
 from sicp_streams import Stream
 
@@ -10,10 +8,11 @@ def _sieve(stream):
     if stream is None:
         return None
 
-    return Stream(stream.head, partial(_sieve, streamtools.sfilter(lambda x: x % stream.head != 0, stream.tail)))
+    return Stream(stream.head, lambda: _sieve(streamtools.sfilter(lambda x: x % stream.head != 0, stream.tail)))
 
 
 primes = _sieve(streamtools.count(2))
+primes_less_than_10 = _sieve(Stream(*range(2, 10)))
 
 ones = Stream(1, lambda: ones)
 

@@ -6,6 +6,10 @@ def test_sieved_primes():
     assert primes[50] == 233
 
 
+def test_primes_less_than_10():
+    assert primes_less_than_10 == Stream(2, 3, 5, 7)
+
+
 def test_ones():
     assert ones[100] == 1
     assert ones.tail is ones

@@ -66,6 +66,8 @@ def repeat(obj, times=None):
 
 def accumulate(stream, func=operator.add, *, initial=None):
     if stream is None:
+        if initial is None:
+            return None
         return Stream(initial)
 
     def resolve(stream, initial):
