@@ -153,7 +153,7 @@ def sslice(stream, *args):
 
     if stop <= start:
         return None
-    while stream is not None and start > 0 and stop > 0:
+    while stream is not None and start > 0:
         stream = stream.tail
         start -= 1
         stop -= 1
