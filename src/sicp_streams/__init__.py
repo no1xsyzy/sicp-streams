@@ -3,7 +3,7 @@ import threading
 import typing
 from functools import partial
 
-_ST = typing.TypeVar('_ST')
+_ST = typing.TypeVar('_ST')  # pragma: no mutate
 
 
 class StreamMeta(type):
