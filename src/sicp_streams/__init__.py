@@ -60,7 +60,9 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
             return NotImplemented
 
         pointer_self = self
+        ps_self = [self]
         pointer_other = other
+        ps_other = [other]
         count = 0
         while True:
             if pointer_self.head != pointer_other.head:
@@ -72,8 +74,11 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
             pointer_self = pointer_self.tail
             pointer_other = pointer_other.tail
             count += 1
-            if pointer_self is self and pointer_other is other:
-                return True
+            for hp_self, hp_other in zip(ps_self, ps_other):
+                if pointer_self is hp_self and pointer_other is hp_other:
+                    return True
+            ps_self.append(pointer_self)
+            ps_other.append(pointer_other)
             if count > self._eq_detect_limit:
                 raise RecursionError
 
