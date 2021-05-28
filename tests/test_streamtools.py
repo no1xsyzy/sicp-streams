@@ -1,6 +1,7 @@
 import operator
 
 import pytest
+
 import streamtools
 from sicp_streams import Stream
 
@@ -176,7 +177,7 @@ def test_takewhile():
 def test_tee():
     s = Stream(1, 2, 3)
     teed = streamtools.tee(s)
-    assert teed[0] is teed[1] is s
+    assert len(teed) == 2 and teed[0] is teed[1] is s
     _assert_manipulated_err1(streamtools.tee(_err1)[0])
     _assert_manipulated_err1(streamtools.tee(_err1)[1])
 
