@@ -1,6 +1,7 @@
 import itertools
 
 import pytest
+
 from sicp_streams import Stream
 
 
@@ -79,7 +80,10 @@ def test_equivalence():
 
 
 def test_repr():
-    assert repr(Stream(1, 2, 3)) == "sicp_streams.Stream(1, 2, 3)"
+    assert repr(Stream(1, Stream(2, Stream(3)))) == \
+           "sicp_streams.Stream(1, sicp_streams.Stream(2, sicp_streams.Stream(3, None)))"
+    assert repr(Stream("1", Stream("2", Stream("3")))) == \
+           "sicp_streams.Stream('1', sicp_streams.Stream('2', sicp_streams.Stream('3', None)))"
     lambda_ = lambda: Stream(2, 3)
     assert repr(Stream(1, lambda_)) == "sicp_streams.Stream(1, " + repr(lambda_) + ")"
 

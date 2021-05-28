@@ -15,7 +15,7 @@ class StreamMeta(type):
 class Stream(typing.Generic[_ST], metaclass=StreamMeta):
     __slots__ = ('_head', '_tail')
 
-    _eq_detect_limit: typing.ClassVar[int] = 200
+    _eq_detect_limit: typing.ClassVar[int] = 500
 
     def __init__(self, head, *args):
         if args:
@@ -24,7 +24,7 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
             more_heads = tail = None
         self._head = head
         if more_heads:
-            self._tail = Stream(*more_heads, tail)
+            self._tail = partial(Stream, *more_heads, tail)
         else:
             self._tail = tail
 
@@ -75,15 +75,7 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
                 raise RecursionError
 
     def __repr__(self):
-        resolved_so_far = []
-        pivot = self
-        resolved_so_far.append(pivot.head)
-        while isinstance(pivot._tail, Stream) and pivot._tail is not None:
-            pivot = pivot._tail
-            resolved_so_far.append(pivot.head)
-        if pivot is not None:
-            resolved_so_far.append(pivot._tail)
-        return self.__class__.__module__ + "." + self.__class__.__name__ + repr(tuple(resolved_so_far))
+        return f"{self.__class__.__module__}.{self.__class__.__name__}({self._head!r}, {self._tail!r})"
 
     def __getitem__(self, item):
         if item < 0:
