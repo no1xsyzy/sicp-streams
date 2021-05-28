@@ -43,8 +43,8 @@ def test_dotproduct():
 
 
 def test_convolve():
-    convolution = convolve(Stream(1, 2, 3, 4, 5), [0.25] * 4)
-    assert convolution == Stream(0.25, 0.75, 1.5, 2.5, 3.5, 3, 2.25, 1.25)
+    assert convolve(Stream(1, 2, 3, 4, 5), [0.25] * 4) == Stream(0.25, 0.75, 1.5, 2.5, 3.5, 3, 2.25, 1.25)
+    assert convolve(Stream(1, 2, 3, 4, 5), [1, -1]) == Stream(1, 1, 1, 1, 1, -5)
 
 
 def test_flatten():
