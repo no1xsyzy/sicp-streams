@@ -63,6 +63,7 @@ def test_equivalence():
     infinite_stream2 = Stream(1, 1, lambda: infinite_stream2)
 
     assert infinite_stream1 == infinite_stream2
+    assert infinite_stream1 != s
     assert Stream(0, infinite_stream1) == Stream(0, infinite_stream2)
 
     limit = Stream._eq_detect_limit
