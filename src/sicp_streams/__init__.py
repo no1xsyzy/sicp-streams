@@ -16,7 +16,7 @@ class StreamMeta(type):
 class Stream(typing.Generic[_ST], metaclass=StreamMeta):
     __slots__ = ('_head', '_tail', '_tlocal')
 
-    _eq_detect_limit: typing.ClassVar[int] = 500
+    _eq_detect_limit: typing.ClassVar[int] = 500  # pragma: no mutate
 
     def __init__(self, head, *args):
         if args:
