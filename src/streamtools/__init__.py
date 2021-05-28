@@ -202,7 +202,7 @@ def product(*streams, repeat=1):
 def permutations(stream, r=None):
     pool = tuple(stream)
     n = len(pool)
-    r = r or n
+    r = n if r is None else r
     return smap(lambda indices: tuple(pool[i] for i in indices),
                 sfilter(lambda indices: len(set(indices)) == r,
                         product(Stream(*range(n)), repeat=r)))
