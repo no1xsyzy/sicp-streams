@@ -84,6 +84,8 @@ def test_repr():
            "sicp_streams.Stream(1, sicp_streams.Stream(2, sicp_streams.Stream(3, None)))"
     assert repr(Stream("1", Stream("2", Stream("3")))) == \
            "sicp_streams.Stream('1', sicp_streams.Stream('2', sicp_streams.Stream('3', None)))"
+    ones = Stream(1, lambda: ones)
+    assert repr(ones.tail) == 'sicp_streams.Stream(1, sicp_streams.Stream(...))'
     lambda_ = lambda: Stream(2, 3)
     assert repr(Stream(1, lambda_)) == "sicp_streams.Stream(1, " + repr(lambda_) + ")"
 

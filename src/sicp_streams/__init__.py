@@ -1,4 +1,5 @@
 import functools
+import threading
 import typing
 from functools import partial
 
@@ -13,7 +14,7 @@ class StreamMeta(type):
 
 
 class Stream(typing.Generic[_ST], metaclass=StreamMeta):
-    __slots__ = ('_head', '_tail')
+    __slots__ = ('_head', '_tail', '_tlocal')
 
     _eq_detect_limit: typing.ClassVar[int] = 500
 
@@ -27,6 +28,8 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
             self._tail = partial(Stream, *more_heads, tail)
         else:
             self._tail = tail
+        self._tlocal = threading.local()
+        self._tlocal.repr = False
 
     @property
     def head(self) -> _ST:
@@ -75,7 +78,13 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
                 raise RecursionError
 
     def __repr__(self):
-        return f"{self.__class__.__module__}.{self.__class__.__name__}({self._head!r}, {self._tail!r})"
+        if self._tlocal.repr:
+            return f"{self.__class__.__module__}.{self.__class__.__name__}(...)"
+        try:
+            self._tlocal.repr = True
+            return f"{self.__class__.__module__}.{self.__class__.__name__}({self._head!r}, {self._tail!r})"
+        finally:
+            self._tlocal.repr = False
 
     def __getitem__(self, item):
         if item < 0:
