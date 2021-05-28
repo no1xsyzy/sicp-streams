@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sicp-streams"
-version = "0.1.1"
+version = "0.2.0"
 description = "Replace iterator with stream and enjoy immutable. "
 readme = "README.md"
 authors = ["Xu Siyuan <inqb@protonmail.com>"]
