@@ -123,3 +123,4 @@ def test_from_generator_function():
         yield from range(x)
 
     assert run(10) == Stream(*range(10))
+    assert run.__name__ == 'run'
