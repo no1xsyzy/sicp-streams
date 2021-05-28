@@ -94,5 +94,6 @@ def test_iter_except():
 
 def test_first_true():
     assert first_true(Stream(0, False, 9)) == 9
+    assert first_true(Stream(0, [], ())) is False
     assert first_true(Stream(1, 5), 9, lambda x: x > 3) == 5
     assert first_true(Stream(1, 5), 9, lambda x: x > 7) == 9
