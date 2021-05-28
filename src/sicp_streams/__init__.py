@@ -65,11 +65,11 @@ class Stream(typing.Generic[_ST], metaclass=StreamMeta):
         ps_other = [other]
         count = 0
         while True:
-            if pointer_self.head != pointer_other.head:
-                return False
-            if pointer_self.tail is pointer_other.tail:
+            if pointer_self is pointer_other:
                 return True
-            if pointer_self.tail is None or pointer_other is None:
+            if pointer_self is None or pointer_other is None:
+                return False
+            if pointer_self.head != pointer_other.head:
                 return False
             pointer_self = pointer_self.tail
             pointer_other = pointer_other.tail
