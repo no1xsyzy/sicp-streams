@@ -190,7 +190,7 @@ def zip_longest(*streams, fillvalue=None):
 
 
 def product(*streams, repeat=1):
-    streams, repeat = streams * repeat, 1
+    streams = streams * repeat
     # product() = [[]]
     if not streams:
         return Stream(())
